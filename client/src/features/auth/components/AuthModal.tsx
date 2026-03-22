@@ -100,7 +100,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
     if (!validateLogin()) return;
 
     try {
-      const res = await login({ email, password });
+      const res = await login({ email, password,  userAgent: navigator.userAgent, });
 
       if (!res || !res.message) {
         throw new Error("Login failed");

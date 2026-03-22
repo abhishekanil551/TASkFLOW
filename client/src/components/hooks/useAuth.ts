@@ -31,6 +31,7 @@ export const useAuth =() =>{
     const login = async (data:{
         email: string;
         password: string;
+        userAgent: string;
     }) => {
         return userLogin(repo, data);
     }

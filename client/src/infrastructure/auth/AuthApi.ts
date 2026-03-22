@@ -23,7 +23,7 @@ export class AuthApi implements AuthRepository{
         return res.data;
     }
 
-    async login(data: { email: string; password: string; }): Promise<{ message: string; }> {
+    async login(data: { email: string; password: string; userAgent: string;}): Promise<{ message: string; }> {
         const res = await api.post("/auth/login", data);
         return res.data;
     }

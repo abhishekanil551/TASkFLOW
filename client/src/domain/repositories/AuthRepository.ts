@@ -9,5 +9,5 @@ export interface AuthRepository {
 
     resendOtp(data: {email: string}): Promise<{ message:string }>;
 
-    login(data: {email: string; password:string}): Promise<{message: string}>;
+    login(data: {email: string; password:string; userAgent: string}): Promise<{message: string}>;
 }
