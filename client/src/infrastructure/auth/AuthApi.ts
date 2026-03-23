@@ -37,4 +37,9 @@ export class AuthApi implements AuthRepository{
         const res = await api.get("/auth/me")
         return res.data;
     }
+
+    async googleLogin(data: { email: string; name: string; googleId: string; }){
+        const res = await api.post("/auth/google-login", data);
+        return res.data
+    }
 }

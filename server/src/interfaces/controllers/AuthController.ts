@@ -7,17 +7,18 @@ import { VerifyOtp } from "../../application/usecases/VerifyOtp";
 import { ResendOtp } from "../../application/usecases/ResendOtp";
 import { MongoUserRepository } from "../../infrastructure/repositories/MongoUserRepository";
 import { LoginUser } from "../../application/usecases/LoginUser";
+import { GoogleLogin } from "../../application/usecases/GoogleLogin";
 
 const repo = new MongoUserRepository();
 const registerUser = new RegisterUser(repo);
 const loginUser = new LoginUser(repo);
 const verifyOtp = new VerifyOtp(repo);
 const resendotp = new ResendOtp(repo);
+const googlelogin = new GoogleLogin(repo);
 
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
-    console.log(name, email, password);
     const user = await registerUser.execute(name, email, password);
     res.status(200).json(user);
   } catch (error) {
@@ -32,7 +33,6 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password, userAgent } = req.body;
 
-    console.log(email, password);
 
     const result = await loginUser.execute(email, password);
 
@@ -143,6 +143,33 @@ export const resendOtp = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response) => {
-  res.clearCookie("token"); // this remove jwt cookie
+  res.clearCookie("token");
   return res.json({ message: "Loggeed out" });
+};
+
+export const googleLogin = async (req: Request, res: Response) => {
+  try {
+    const { email, name } = req.body;
+    const result = await googlelogin.execute(email, name);
+
+    const { user } = result;
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
+      expiresIn: "7d",
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+    });
+
+    res.json({ message: "Google login success" });
+  } catch (error) {
+    console.log("🔥 ERROR:", error);
+
+    const message =
+      error instanceof Error ? error.message : "Something went wrong";
+
+    res.status(400).json({ message });
+  }
 };

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Google } from "@lobehub/icons";
 import OtpModal from "./OtpModal";
+import { GoogleLogin } from "@react-oauth/google";
+import {jwtDecode} from "jwt-decode";
 import { useAuth } from "../../../components/hooks/useAuth";
 import Logo from "../../../components/ui/Logo";
 
@@ -9,6 +10,12 @@ interface AuthModalProps {
   setIsLogin: (value: boolean) => void;
   onClose: () => void;
 }
+
+type GoogleUser = {
+  email: string;
+  name: string;
+  sub: string;
+};
 
 const AuthModal: React.FC<AuthModalProps> = ({
   isLogin,
@@ -21,7 +28,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { register, login } = useAuth();
+  const { register, login, loginWithGoogle } = useAuth();
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [error, setError] = useState("");
@@ -58,7 +65,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-
   const handleSignup = async () => {
     if (!validateSignup()) return;
     try {
@@ -73,7 +79,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
       setError(message);
     }
   };
-
 
   const validateLogin = async () => {
     const newErrors: { [key: string]: string } = {};
@@ -100,7 +105,11 @@ const AuthModal: React.FC<AuthModalProps> = ({
     if (!validateLogin()) return;
 
     try {
-      const res = await login({ email, password,  userAgent: navigator.userAgent, });
+      const res = await login({
+        email,
+        password,
+        userAgent: navigator.userAgent,
+      });
 
       if (!res || !res.message) {
         throw new Error("Login failed");
@@ -117,7 +126,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
       setError(message);
     }
   };
-
 
   // Close on outside click
   useEffect(() => {
@@ -208,19 +216,29 @@ const AuthModal: React.FC<AuthModalProps> = ({
               <span className="px-3 text-zinc-400 text-sm">or</span>
               <hr className="flex-grow border-zinc-600" />
             </div>
-            <button
-              onClick={() => console.log("Google login clicked")}
-              className="flex items-center justify-center max-w-xs mx-auto w-full px-4 py-2 bg-white border border-zinc-500 text-gray-700 rounded hover:bg-gray-100 transition-colors"
-            >
-              <svg
-                className="w-5 h-5 mr-2"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <Google size={23} />
-              </svg>
-              Login with Google
-            </button>
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                if (!credentialResponse.credential) return;
+
+                const decoded = jwtDecode<GoogleUser>(credentialResponse.credential);
+
+                loginWithGoogle({
+                  email: decoded.email,
+                  name: decoded.name,
+                  googleId: decoded.sub,
+                })
+                  .then(() => {
+                    onClose();
+                    window.location.href = "/home";
+                  })
+                  .catch(() => {
+                    setError("Google login failed");
+                  });
+              }}
+              onError={() => {
+                setError("Google login failed");
+              }}
+            />
           </form>
         ) : (
           <form>
@@ -275,19 +293,29 @@ const AuthModal: React.FC<AuthModalProps> = ({
               <span className="px-3 text-zinc-400 text-sm">or</span>
               <hr className="flex-grow border-zinc-600" />
             </div>
-            <button
-              onClick={() => console.log("Google sign up clicked")}
-              className="flex items-center justify-center max-w-xs mx-auto w-full px-4 py-2 bg-white border border-zinc-500 text-gray-700 rounded hover:bg-gray-100 transition-colors"
-            >
-              <svg
-                className="w-5 h-5 mr-2"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <Google size={23} />
-              </svg>
-              Sign up with Google
-            </button>
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                if (!credentialResponse.credential) return;
+
+                const decoded = jwtDecode<GoogleUser>(credentialResponse.credential);
+
+                loginWithGoogle({
+                  email: decoded.email,
+                  name: decoded.name,
+                  googleId: decoded.sub,
+                })
+                  .then(() => {
+                    onClose();
+                    window.location.href = "/home";
+                  })
+                  .catch(() => {
+                    setError("Google login failed");
+                  });
+              }}
+              onError={() => {
+                setError("Google login failed");
+              }}
+            />
           </form>
         )}
       </div>
