@@ -40,45 +40,51 @@ export const login = async (req: Request, res: Response) => {
       expiresIn: "7d",
     });
 
-
-    
     const parser = new UAParser(userAgent);
     const ua = parser.getResult();
 
     const device = `${ua.os.name} · ${ua.browser.name}`;
     const ip = req.ip;
 
+    // 🔥 SEND EMAIL - Login Alert
+    await sendEmail(
+      email,
+      "New Login Detected",
+      `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; background: #ffffff; border-radius: 12px;">
 
-// 🔥 SEND EMAIL - Login Alert
-await sendEmail(
-  email,
-  "New Login Detected",
-  `
-  <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; background: #ffffff; border-radius: 12px; border: 1px solid #e0e0e0;">
-    
-    <!-- Header -->
-    <h2 style="color: #d93025; text-align: center;">New Login Detected</h2>
-    
-    <!-- Details -->
-    <p style="font-size: 16px; color: #333;">
-      We noticed a new login to your TaskFlow account:
-    </p>
-    
-    <p style="background: #f8f9fa; padding: 15px; border-radius: 8px; color: #444;">
-      <strong>Device:</strong> ${device}<br>
-      <strong>IP Address:</strong> ${ip}<br>
-      <strong>Time:</strong> ${new Date().toLocaleString()}
-    </p>
+          <!-- Logo - perfectly centered -->
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 30px;">
+            <div style="width: 42px; height: 42px; background: #06b6d4; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #0f172a; font-size: 30px; line-height: 1;">
+              TF
+            </div>
+            <span style="font-size: 24px; font-weight: 700; color: #0f172a;">
+              TaskFlow<span style="color: #06b6d4;">Pro</span>
+            </span>
+          </div>
 
-    <!-- Footer -->
-    <p style="font-size: 13px; color: #666; text-align: center; margin-top: 25px;">
-      If this wasn't you, please secure your account immediately.
-    </p>
-    
-  </div>
-  `
-);
+          <!-- Header -->
+          <h2 style="color: #d93025; text-align: center;">New Login Detected</h2>
+          
+          <!-- Details -->
+          <p style="font-size: 16px; color: #333;">
+            We noticed a new login to your TaskFlow account:
+          </p>
+          
+          <p style="background: #f8f9fa; padding: 15px; border-radius: 8px; color: #444;">
+            <strong>Device:</strong> ${device}<br>
+            <strong>IP Address:</strong> ${ip}<br>
+            <strong>Time:</strong> ${new Date().toLocaleString()}
+          </p>
 
+          <!-- Footer -->
+          <p style="font-size: 13px; color: #666; text-align: center; margin-top: 25px;">
+            If this wasn't you, please secure your account immediately.
+          </p>
+          
+        </div>
+      `,
+    );
 
     res.cookie("token", token, {
       httpOnly: true,

@@ -16,10 +16,21 @@ export class ResendOtp {
 
     const otp = generateOtp();
 
-  await sendEmail(
-    email,
-    "Your OTP Code",
-    `
+    await sendEmail(
+      email,
+      "Your OTP Code",
+      `
+
+          <!-- Logo - perfectly centered -->
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 30px;">
+            <div style="width: 42px; height: 42px; background: #06b6d4; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #0f172a; font-size: 30px; line-height: 1;">
+              TF
+            </div>
+            <span style="font-size: 24px; font-weight: 700; color: #0f172a;">
+              TaskFlow<span style="color: #06b6d4;">Pro</span>
+            </span>
+          </div>
+          
     <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #e0e0e0; border-radius: 12px; background-color: #ffffff;">
       <h2 style="color: #1a73e8; text-align: center;">TaskFlow</h2>
       <p style="font-size: 16px; color: #333;">Your verification code is:</p>
@@ -31,8 +42,8 @@ export class ResendOtp {
         If you didn't request this, please ignore this email.
       </p>
     </div>
-    `
-  );
+    `,
+    );
 
     user.otp = otp;
     user.otpExpires = new Date(Date.now() + 5 * 60 * 1000);
