@@ -1,7 +1,9 @@
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
-import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
+import  MainLayout from "./components/layout/MainLayout"
+import { LayoutProvider } from "./context/layout/LayoutProvider";
 import "./index.css";
 
 function App() {
@@ -9,11 +11,15 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route
-          path="/home"
+          path="/dashboard"
           element={
             <ProtectedRoute>
-              {" "}
-              <Home />{" "}
+              <LayoutProvider>
+                <MainLayout>
+                <Dashboard />
+                </MainLayout>
+              </LayoutProvider>
+              
             </ProtectedRoute>
           }
         />

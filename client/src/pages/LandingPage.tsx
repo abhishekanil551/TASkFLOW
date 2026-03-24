@@ -19,7 +19,7 @@ const LandingPage: React.FC = () => {
     );
 
 
-  if (isAuth) return <Navigate to="/home" />;
+  if (isAuth) return <Navigate to="/dashboard" />;
 
 
   return (

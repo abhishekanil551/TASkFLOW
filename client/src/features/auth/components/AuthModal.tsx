@@ -117,7 +117,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
 
       setError("");
       onClose();
-      window.location.href = "/home";
+      window.location.href = "/dashboard";
     } catch (err: unknown) {
       const message =
         (err as { response?: { data?: { message?: string } } })?.response?.data
@@ -229,7 +229,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
                 })
                   .then(() => {
                     onClose();
-                    window.location.href = "/home";
+                    window.location.href = "/dashboard";
                   })
                   .catch(() => {
                     setError("Google login failed");
@@ -306,7 +306,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
                 })
                   .then(() => {
                     onClose();
-                    window.location.href = "/home";
+                    window.location.href = "/dashboard";
                   })
                   .catch(() => {
                     setError("Google login failed");

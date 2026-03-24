@@ -37,7 +37,7 @@ export default function OtpModal({ email, onClose }: OtpModalProps) {
       setMessage("Verified successfully");
       setError("");
       onClose();
-      window.location.href = "/home";
+      window.location.href = "/dashboard";
     } catch (err: unknown) {
       const message =
         (err as { response?: { data?: { message?: string } } })?.response?.data
