@@ -4,7 +4,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./infrastructure/database/db";
 import authCheckRoutes from "./interfaces/routes/authCheckRoutes";
-import authRoutes from "./interfaces/routes/authRoutes"
+import authRoutes from "./interfaces/routes/authRoutes";
+import taskRoutes from "./interfaces/routes/taskRoutes";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(
 
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", authCheckRoutes);
+app.use("/api/tasks", taskRoutes);
 
 dotenv.config();
 

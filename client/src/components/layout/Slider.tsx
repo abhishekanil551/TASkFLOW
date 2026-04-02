@@ -37,14 +37,14 @@ export default function Sidebar() {
     <aside
       className={`fixed left-0 top-0 z-50 h-screen dark:bg-gray-950 
         transition-all duration-300 flex flex-col
-        ${isCollapsed ? 'w-18' : 'w-64'}`}
+        ${isCollapsed ? 'w-18' : 'w-44'}`}
       onMouseEnter={() => setIsCollapsed(false)}
       onMouseLeave={() => setIsCollapsed(true)}
     >
       <div className="flex flex-col h-full">
         {/* Logo Section */}
         <div
-          className={`flex items-center dark:border-gray-800 px-6 py-8 transition-all
+          className={`flex items-center dark:border-gray-800  px-2 py-8 transition-all
             ${isCollapsed ? 'px-4 justify-center' : ''}`}
         >
           {isCollapsed ? (
@@ -93,14 +93,14 @@ export default function Sidebar() {
         {/* User Footer */}
         <div className="border-t border-gray-200 dark:border-gray-800 p-4">
           <div
-            className={`flex items-center gap-3 rounded-xl p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer
+            className={`flex items-center gap- rounded-xl p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer
               ${isCollapsed ? 'justify-center' : ''}`}
           >
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0" />
 
             {!isCollapsed && (
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm text-gray-900 dark:text-white">Abhishek</p>
+                <p className="font-medium text-sm text-zinc-700 dark:text-white">Abhishek</p>
               </div>
             )}
           </div>

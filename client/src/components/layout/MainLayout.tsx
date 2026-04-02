@@ -21,8 +21,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <Header />
 
       {/* Main Content - Dynamically adjusts based on sidebar state */}
-      <main className={`fixed top-16 bottom-0 right-0 transition-all duration-300 overflow-auto me-4 mb-2 border rounded-md border-zinc-800
-        ${isCollapsed ? 'left-24' : 'left-64'}`}>
+      <main className={`fixed top-20 bottom-0 right-0 transition-all duration-300 overflow-auto me-4 mb-2 border rounded-md border-zinc-800
+        ${isCollapsed ? 'left-24' : 'left-44'}`}>
         <div className="h-full p-6">
           {children}
         </div>

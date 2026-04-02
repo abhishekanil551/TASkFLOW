@@ -10,10 +10,10 @@ export default function Header() {
 
   return (
     <header className={`fixed  top-0 right-0 z-40 h-16 bg-gray-950 backdrop-blur-md transition-all duration-300
-      ${isCollapsed ? 'left-24' : 'left-64'}`}>
+      ${isCollapsed ? 'left-20' : 'left-44'}`}>
       <div className="h-full px-6 flex items-center justify-between">
         {/* Left - Search */}
-        <div className="flex-1 max-w-md">
+        <div className="flex-1 max-w-md mt-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
