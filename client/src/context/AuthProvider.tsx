@@ -9,12 +9,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    getMe()
-      .then((res) => setUser(res))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
-  }, [getMe]);
+useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      const data = await getMe(); 
+
+      setUser(data);             
+    } catch (err) {
+      console.error("Failed to fetch user", err);
+      setUser(null);              
+    } finally {
+      setLoading(false);          
+    }
+  };
+
+  fetchUser();
+}, []);
 
   const logout = async () => {
     await apiLogout();   

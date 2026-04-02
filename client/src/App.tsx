@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ui/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
+import MyTasks from "./pages/MyTask";
 import  MainLayout from "./components/layout/MainLayout"
 import { LayoutProvider } from "./context/layout/LayoutProvider";
 import "./index.css";
@@ -17,6 +18,20 @@ function App() {
               <LayoutProvider>
                 <MainLayout>
                 <Dashboard />
+                </MainLayout>
+              </LayoutProvider>
+              
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-tasks"
+          element={
+            <ProtectedRoute>
+              <LayoutProvider>
+                <MainLayout>
+                <MyTasks />
                 </MainLayout>
               </LayoutProvider>
               

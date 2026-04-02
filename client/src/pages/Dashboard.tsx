@@ -254,20 +254,20 @@ export default function Dashboard() {
   return (
     <MainLayout>
       {/* HEADER */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-white mb-1">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-white mb-1">
           Welcome back, {user?.email?.split("@")[0]}
         </h1>
-        <p className="text-gray-400">Here's what you need to focus on today</p>
+        <p className="text-sm text-gray-400">Focus on what matters today</p>
       </div>
 
       {/* ADD BUTTON */}
       <div className="flex justify-end mb-6">
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-3 rounded-2xl font-medium transition-all"
+          className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition-all"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
           Add Task
         </button>
       </div>
@@ -276,14 +276,14 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* TODO */}
         <div>
-          <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
             To Do
-            <span className="text-sm bg-gray-700 px-3 py-1 rounded-xl">
+            <span className="text-xs bg-gray-700 px-2 py-0.5 rounded-md">
               {todoTasks.length}
             </span>
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {todoTasks.map((task) => (
               <TaskCard
                 key={task.id}
@@ -305,14 +305,14 @@ export default function Dashboard() {
 
         {/* IN PROGRESS */}
         <div>
-          <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
             In Progress
-            <span className="text-sm bg-blue-900/50 text-blue-400 px-3 py-1 rounded-xl">
+            <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded-md font-medium">
               {inProgressTasks.length}
             </span>
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {inProgressTasks.map((task) => (
               <TaskCard
                 key={task.id}
@@ -333,14 +333,14 @@ export default function Dashboard() {
 
         {/* COMPLETED */}
         <div>
-          <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
             Completed
-            <span className="text-sm bg-green-900/50 text-green-400 px-3 py-1 rounded-xl">
+            <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-md font-medium">
               {completedTasks.length}
             </span>
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {completedTasks.map((task) => (
               <TaskCard
                 key={task.id}
@@ -357,8 +357,8 @@ export default function Dashboard() {
       </div>
 
       {tasks.length === 0 && (
-        <div className="text-center text-gray-400 mt-10">
-          No tasks yet. Start by adding one 🚀
+        <div className="text-center text-gray-400 text-sm mt-10">
+          No tasks yet. Start by adding one
         </div>
       )}
 
@@ -374,7 +374,7 @@ export default function Dashboard() {
         initialData={editingTask || undefined}
       />
       {toast && (
-        <div className="fixed bottom-6 right-6 bg-green text-white px-4 py-3 rounded-xl shadow-lg border border-gray-700 animate-fadeIn">
+        <div className="fixed bottom-6 right-6 bg-green-500 text-white px-4 py-2 rounded-lg text-sm shadow-lg border border-gray-700">
           {toast}
         </div>
       )}
