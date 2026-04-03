@@ -3,7 +3,6 @@ import type { TaskRepository } from "../../domain/repositories/TaskRepository";
 import type { Task } from "../../domain/entities/Task";
 
 export class TaskApi implements TaskRepository {
-
   async addTask(data: Task): Promise<Task> {
     try {
       const res = await api.post("/tasks", data);
@@ -61,5 +60,26 @@ export class TaskApi implements TaskRepository {
       console.error("❌ Delete Task API failed:", err);
       throw err;
     }
+  }
+
+  async getAllTasks(
+    page = 1,
+    limit = 10,
+    filters?: {
+      search?: string;
+      status?: string;
+      priority?: string;
+    },
+  ) {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+      ...(filters?.search && { search: filters.search }),
+      ...(filters?.status && { status: filters.status }),
+      ...(filters?.priority && { priority: filters.priority }),
+    });
+
+    const res = await api.get(`/tasks/all?${params.toString()}`);
+    return res.data;
   }
 }

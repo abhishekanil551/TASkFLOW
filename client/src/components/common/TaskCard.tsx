@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import {
   Play,
   Pause,
@@ -12,6 +13,7 @@ import type { Task } from "../../domain/entities/Task";
 
 interface TaskCardProps {
   task: Task;
+  highlightedTitle?: ReactNode; 
   isOverdue?: boolean;
   onStart?: () => void;
   onPause?: () => void;
@@ -23,6 +25,7 @@ interface TaskCardProps {
 
 export default function TaskCard({
   task,
+  highlightedTitle,
   isOverdue,
   onStart,
   onPause,
@@ -63,7 +66,7 @@ export default function TaskCard({
 
   return (
     <div
-      className={`bg-[#1a2332] border rounded-2xl p-4 transition-all group ${
+      className={`bg-[#1a2332] max-w-xl border rounded-2xl p-4 transition-all group ${
         isOverdue
           ? "border-red-500 shadow-[0_0_12px_rgba(239,68,68,0.25)]"
           : "border-gray-700 hover:border-cyan-500/30"
@@ -73,7 +76,7 @@ export default function TaskCard({
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
           <h3 className="font-semibold text-white text-sm leading-tight">
-            {task.title}
+            {highlightedTitle ?? task.title}
           </h3>
           {isOverdue && (
             <span className="text-xs text-red-700 font-medium inline-flex items-center">

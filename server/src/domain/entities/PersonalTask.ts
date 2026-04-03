@@ -21,3 +21,16 @@ export interface PersonalTask {
   updatedAt?: string;
   lastCompletedDate?: string;
 }
+
+export type TaskFilters = {
+  search?: string;
+  status?: string;
+  priority?: string;
+};
+
+export type PaginatedTasks = {
+  data: PersonalTask[];
+  total: number;
+  page: number;
+  totalPages: number;
+};

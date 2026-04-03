@@ -271,4 +271,78 @@ export class PersonalTaskRepository implements IPersonalTaskRepository {
       updatedAt: updated.updatedAt.toISOString(),
     };
   }
+
+  async findByUserIdPaginated(
+    userId: string,
+    page: number,
+    limit: number,
+    filters?: {
+      search?: string;
+      status?: string;
+      priority?: string;
+    },
+  ) {
+    const skip = (page - 1) * limit;
+
+    const query: any = { userId };
+
+    if (filters?.search) {
+      query.title = {
+        $regex: filters.search,
+        $options: "i", 
+      };
+    }
+
+    if (filters?.status && filters.status !== "all") {
+      if (filters.status === "active") {
+        query.status = { $ne: "completed" };
+      } else if (filters.status === "overdue") {
+        const today = new Date().toISOString().split("T")[0];
+
+        query.dueDate = { $lt: today };
+        query.status = { $ne: "completed" };
+      } else {
+        query.status = filters.status;
+      }
+    }
+
+    if (filters?.priority && filters.priority !== "all") {
+      query.priority = filters.priority;
+    }
+
+    const [tasks, total] = await Promise.all([
+      PersonalTaskModel.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(12),
+
+      PersonalTaskModel.countDocuments(query),
+    ]);
+
+    return {
+      data: tasks.map((task) => ({
+        id: task._id.toString(),
+        userId: task.userId,
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        priority: task.priority,
+
+        type: task.type,
+        days: task.days || [],
+
+        startDate: task.startDate || "",
+        dueDate: task.dueDate || "",
+
+        timeSpent: task.timeSpent,
+        isTimerRunning: task.isTimerRunning,
+
+        createdAt: task.createdAt.toISOString(),
+        updatedAt: task.updatedAt.toISOString(),
+      })),
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
 }

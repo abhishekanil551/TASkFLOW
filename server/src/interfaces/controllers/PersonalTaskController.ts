@@ -5,6 +5,7 @@ import { ToggleTimer } from "../../application/usecases/personalTask/ToggleTimer
 import { CompleteTask } from "../../application/usecases/personalTask/CompleteTask";
 import { UpdateTask } from "../../application/usecases/personalTask/UpdateTask";
 import { DeleteTask } from "../../application/usecases/personalTask/DeleteTask";
+import { GetAllTask } from "../../application/usecases/personalTask/GetAllTask";
 
 export class PersonalTaskController {
   constructor(
@@ -14,6 +15,7 @@ export class PersonalTaskController {
     private completeTask: CompleteTask,
     private updateTaskUseCase: UpdateTask,
     private deleteTaskuseCase: DeleteTask,
+    private getAllTask: GetAllTask,
   ) {}
 
   async addtask(req: Request, res: Response) {
@@ -52,6 +54,29 @@ export class PersonalTaskController {
       const task = await this.getTask.execute(userId);
 
       return res.json(task);
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
+  async getalltask(req: Request, res: Response) {
+    try {
+      const userId = (req as any).userId;
+
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 10;
+
+      const search = String(req.query.search || "");
+      const status = String(req.query.status || "all");
+      const priority = String(req.query.priority || "all");
+
+      const result = await this.getAllTask.execute(userId, page, limit, {
+        search,
+        status,
+        priority,
+      });
+
+      return res.json(result);
     } catch (error: any) {
       return res.status(500).json({ message: error.message });
     }

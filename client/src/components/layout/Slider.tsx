@@ -72,7 +72,7 @@ export default function Sidebar() {
                     ${isCollapsed ? 'justify-center' : ''}
                     ${
                       isActive
-                        ? 'bg-blue-50 text-blue-600 border border-blue-100 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-900'
+                        ? ''
                         : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200'
                     }`}
                 >

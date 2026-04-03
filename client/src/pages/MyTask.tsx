@@ -1,278 +1,252 @@
 import { useState, useEffect } from "react";
-import { Plus, Filter, LayoutGrid, List } from "lucide-react";
+import type { ReactNode } from "react";
+import { Plus, Search } from "lucide-react";
 
 import TaskCard from "../components/common/TaskCard";
 import AddTaskModal from "../components/modals/AddTaskModal";
+import Pagination from "../components/common/Pagination";
+
 import { useTask } from "../components/hooks/useTask";
 import type { Task } from "../domain/entities/Task";
 
-type FilterTab = "all" | "active" | "completed";
+type FilterTab = "all" | "active" | "completed" | "overdue";
 
 export default function MyTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filterTab, setFilterTab] = useState<FilterTab>("all");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [totalItems, setTotalItems] = useState(0);
+
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState("all");
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-  // ✅ API METHODS
-  const { getTasks, toggleTimer, completeTask, addTask, updateTask } = useTask();
+  const { getAllTasks, toggleTimer, completeTask, addTask, updateTask } =
+    useTask();
 
-  // ✅ FETCH TASKS
+  // ✅ debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // ✅ FETCH
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const data = await getTasks();
-        setTasks(data);
-      } catch (err) {
-        console.error("Failed to fetch tasks", err);
+        setLoading(true);
+        setError(null);
+
+        const res = await getAllTasks(page, 10, {
+          search: debouncedSearch,
+          status: filterTab,
+          priority: priorityFilter,
+        });
+
+        setTasks(res.data);
+        setTotalPages(res.totalPages);
+        setTotalItems(res.total);
+      } catch (err: unknown) {
+        console.error(err);
+        setError("Failed to load tasks");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchTasks();
-  }, [getTasks]);
+  }, [page, debouncedSearch, filterTab, priorityFilter]);
 
-  // ✅ ACTIONS
-
+  // ACTIONS
   const handleToggle = async (id: string) => {
-    try {
-      const updated = await toggleTimer(id);
-      setTasks((prev) =>
-        prev.map((t) => (t.id === id ? updated : t))
-      );
-    } catch (err) {
-      console.error("Toggle failed", err);
-    }
+    const updated = await toggleTimer(id);
+    setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
   };
 
   const handleComplete = async (id: string) => {
-    try {
-      const updated = await completeTask(id);
-      setTasks((prev) =>
-        prev.map((t) => (t.id === id ? updated : t))
-      );
-    } catch (err) {
-      console.error("Complete failed", err);
-    }
+    const updated = await completeTask(id);
+    setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
   };
 
   const handleAdd = async (data: Task) => {
-    try {
-      const newTask = await addTask(data);
-      setTasks((prev) => [newTask, ...prev]);
-    } catch (err) {
-      console.error("Add failed", err);
-    }
+    const newTask = await addTask(data);
+    setTasks((prev) => [newTask, ...prev]);
   };
 
   const handleUpdate = async (id: string, data: Task) => {
-    try {
-      const updated = await updateTask(id, data);
-      setTasks((prev) =>
-        prev.map((t) => (t.id === id ? updated : t))
-      );
-    } catch (err) {
-      console.error("Update failed", err);
-    }
+    const updated = await updateTask(id, data);
+    setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
   };
 
-  // ✅ FILTER
-  const filteredTasks = tasks.filter((task: Task) => {
-    if (filterTab === "active") return task.status !== "completed";
-    if (filterTab === "completed") return task.status === "completed";
-    return true;
-  });
+  // ✅ highlight
+  const highlightText = (text: string): ReactNode => {
+    if (!debouncedSearch) return text;
 
-  // ✅ STATS
-  const stats = {
-    total: tasks.length,
-    completed: tasks.filter((t: Task) => t.status === "completed").length,
-    inProgress: tasks.filter((t: Task) => t.status === "in-progress").length,
-    todo: tasks.filter((t: Task) => t.status === "todo").length,
+    const parts = text.split(new RegExp(`(${debouncedSearch})`, "gi"));
+
+    return parts.map((part, i) =>
+      part.toLowerCase() === debouncedSearch.toLowerCase() ? (
+        <span key={i} className="bg-yellow-500/30 px-1 rounded">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
   };
-
-
 
   return (
-    <div className="">
-      <main className="">
-        <div className="">
+    <div>
+      <main className="p-3">
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-3">
+          <div>
+            <h1 className="text-2xl font-bold text-white">My Tasks</h1>
+            <p className="text-xs text-gray-400">
+              Manage and track your tasks
+            </p>
+          </div>
 
-          {/* HEADER */}
-          <div className="flex justify-between items-start  mb-8">
-            <div>
-              <h1 className="text-4xl font-bold text-white mb-2">My Tasks</h1>
-              <p className="text-sm text-gray-400">Tasks assigned to you</p>
+          {/* STATS */}
+          <div className="flex gap-6 text-sm">
+            <div className="text-center">
+              <p className="text-blue-400 font-bold">{totalItems}</p>
+              <p className="text-gray-400 text-xs">Total</p>
             </div>
 
-            <div className="flex gap-2 items-center">
-              <div className="flex gap-4 text-right">
-                <div>
-                  <p className="text-2xl font-bold text-blue-400">{stats.total}</p>
-                  <p className="text-xs text-gray-400">Total Tasks</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-yellow-400">{stats.inProgress}</p>
-                  <p className="text-xs text-gray-400">In Progress</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-green-400">{stats.completed}</p>
-                  <p className="text-xs text-gray-400">Completed</p>
-                </div>
-              </div>
+            <div className="text-center">
+              <p className="text-yellow-400 font-bold">
+                {tasks.filter((t) => t.status === "in-progress").length}
+              </p>
+              <p className="text-gray-400 text-xs">In Progress</p>
+            </div>
 
-              <div className="flex gap-2 ml-6 border-l border-gray-700 pl-6">
-                <button 
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded transition-all ${viewMode === "grid" ? "bg-gray-700 text-white" : "text-gray-400 hover:text-white"}`}
-                >
-                  <LayoutGrid className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded transition-all ${viewMode === "list" ? "bg-gray-700 text-white" : "text-gray-400 hover:text-white"}`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-
-                <button
-                  onClick={() => {
-                    setEditingTask(null);
-                    setShowAddModal(true);
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-sm rounded-lg transition-all ml-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Task
-                </button>
-              </div>
+            <div className="text-center">
+              <p className="text-green-400 font-bold">
+                {tasks.filter((t) => t.status === "completed").length}
+              </p>
+              <p className="text-gray-400 text-xs">Completed</p>
             </div>
           </div>
 
-          {/* FILTER */}
-          <div className="flex gap-4 mb-8 border-b border-gray-700 pb-4">
-            {["all", "active", "completed"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setFilterTab(tab as FilterTab)}
-                className={`text-sm font-medium capitalize transition-all ${
-                  filterTab === tab
-                    ? "text-white border-b-2 border-cyan-500 pb-1"
-                    : "text-gray-400 hover:text-gray-300"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-
-          {/* TASKS BY CATEGORY */}
-          {filteredTasks.length > 0 ? (
-            <div className="space-y-8">
-              {/* TO DO */}
-              {filteredTasks.filter((t) => t.status === "todo").length > 0 && (
-                <div>
-                  <h2 className="text-lg font-semibold text-white mb-4">
-                    To Do
-                    <span className="text-sm text-gray-400 ml-2">
-                      {filteredTasks.filter((t) => t.status === "todo").length}
-                    </span>
-                  </h2>
-                  <div className="grid grid-cols-1 gap-4">
-                    {filteredTasks
-                      .filter((t) => t.status === "todo")
-                      .map((task) => (
-                        <TaskCard
-                          key={task.id}
-                          task={task}
-                          onStart={() => handleToggle(task.id!)}
-                          onPause={() => handleToggle(task.id!)}
-                          onPlay={() => handleToggle(task.id!)}
-                          onComplete={() => handleComplete(task.id!)}
-                          onEdit={() => {
-                            setEditingTask(task);
-                            setShowAddModal(true);
-                          }}
-                        />
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* IN PROGRESS */}
-              {filteredTasks.filter((t) => t.status === "in-progress").length > 0 ? (
-                <div>
-                  <h2 className="text-lg font-semibold text-white mb-4">
-                    In Progress
-                    <span className="text-sm text-gray-400 ml-2">
-                      {filteredTasks.filter((t) => t.status === "in-progress").length}
-                    </span>
-                  </h2>
-                  <div className="grid grid-cols-1 gap-4">
-                    {filteredTasks
-                      .filter((t) => t.status === "in-progress")
-                      .map((task) => (
-                        <TaskCard
-                          key={task.id}
-                          task={task}
-                          onStart={() => handleToggle(task.id!)}
-                          onPause={() => handleToggle(task.id!)}
-                          onPlay={() => handleToggle(task.id!)}
-                          onComplete={() => handleComplete(task.id!)}
-                          onEdit={() => {
-                            setEditingTask(task);
-                            setShowAddModal(true);
-                          }}
-                        />
-                      ))}
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <h2 className="text-lg font-semibold text-white mb-4">In Progress<span className="text-sm text-gray-400 ml-2">0</span></h2>
-                  <EmptyState />
-                </div>
-              )}
-
-              {/* COMPLETED */}
-              {filteredTasks.filter((t) => t.status === "completed").length > 0 ? (
-                <div>
-                  <h2 className="text-lg font-semibold text-white mb-4">
-                    Completed
-                    <span className="text-sm text-gray-400 ml-2">
-                      {filteredTasks.filter((t) => t.status === "completed").length}
-                    </span>
-                  </h2>
-                  <div className="grid grid-cols-1 gap-4">
-                    {filteredTasks
-                      .filter((t) => t.status === "completed")
-                      .map((task) => (
-                        <TaskCard
-                          key={task.id}
-                          task={task}
-                          onStart={() => handleToggle(task.id!)}
-                          onPause={() => handleToggle(task.id!)}
-                          onPlay={() => handleToggle(task.id!)}
-                          onComplete={() => handleComplete(task.id!)}
-                          onEdit={() => {
-                            setEditingTask(task);
-                            setShowAddModal(true);
-                          }}
-                        />
-                      ))}
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <h2 className="text-lg font-semibold text-white mb-4">Completed<span className="text-sm text-gray-400 ml-2">0</span></h2>
-                  <EmptyState />
-                </div>
-              )}
-            </div>
-          ) : (
-            <EmptyState />
-          )}
+          {/* ADD BUTTON */}
+          <button
+            onClick={() => {
+              setEditingTask(null);
+              setShowAddModal(true);
+            }}
+            className="flex items-center gap-2 bg-cyan-600 px-4 py-2 rounded-lg text-white text-sm"
+          >
+            <Plus className="w-4 h-4" />
+            Add Task
+          </button>
         </div>
+
+        {/* TOOLBAR */}
+        <div className="flex gap-3 mb-5">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search tasks..."
+              className="pl-9 pr-3 py-2 bg-gray-900 text-white rounded-lg w-full"
+            />
+          </div>
+
+          <select
+            value={priorityFilter}
+            onChange={(e) => {
+              setPriorityFilter(e.target.value);
+              setPage(1);
+            }}
+            className="bg-gray-900 text-white px-3 py-2 rounded-lg"
+          >
+            <option value="all">All Priority</option>
+            <option value="urgent">Urgent</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+
+        {/* TABS */}
+        <div className="flex gap-4 mb-5">
+          {["all", "active", "completed", "overdue"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => {
+                setFilterTab(tab as FilterTab);
+                setPage(1);
+              }}
+              className={filterTab === tab ? "text-cyan-400" : "text-gray-400"}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {loading &&
+            Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-24 bg-gray-800 rounded animate-pulse"
+              />
+            ))}
+
+          {!loading && error && (
+            <div className="col-span-full text-center text-red-400">
+              {error}
+            </div>
+          )}
+
+          {!loading && !error && tasks.length === 0 && (
+            <div className="col-span-full text-center text-gray-400">
+              No tasks found
+            </div>
+          )}
+
+          {!loading &&
+            !error &&
+            tasks.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                highlightedTitle={highlightText(task.title)}
+                onStart={() => handleToggle(task.id!)}
+                onPause={() => handleToggle(task.id!)}
+                onPlay={() => handleToggle(task.id!)}
+                onComplete={() => handleComplete(task.id!)}
+                onEdit={() => {
+                  setEditingTask(task);
+                  setShowAddModal(true);
+                }}
+              />
+            ))}
+        </div>
+
+        {/* PAGINATION */}
+        <Pagination
+          currentPage={page}
+          totalPages={Math.max(1, totalPages)}
+          totalItems={totalItems}
+          itemsPerPage={10}
+          onPageChange={(p) => setPage(p)}
+        />
       </main>
 
       {/* MODAL */}
@@ -293,4 +267,3 @@ export default function MyTasks() {
     </div>
   );
 }
-

@@ -1,4 +1,4 @@
-import { PersonalTask } from "../entities/PersonalTask";
+import { PersonalTask, TaskFilters, PaginatedTasks } from "../entities/PersonalTask";
 
 export interface IPersonalTaskRepository {
     create(task: PersonalTask): Promise<PersonalTask>;
@@ -6,5 +6,5 @@ export interface IPersonalTaskRepository {
     findById(id: string): Promise<PersonalTask | null>;
     update(id: string, updates: Partial<PersonalTask>): Promise<PersonalTask | null>;
     delete(id: string): Promise<boolean>;
-    updateTimer(id: string , timeSpent: number, isTimerRunning: boolean): Promise<PersonalTask | null>
-}
+    updateTimer(id: string , timeSpent: number, isTimerRunning: boolean): Promise<PersonalTask | null>;
+    findByUserIdPaginated( userId: string, page: number, limit: number, filters: TaskFilters ): Promise<PaginatedTasks>;}

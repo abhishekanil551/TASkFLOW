@@ -16,6 +16,18 @@ export const useTask = () => {
     return taskApi.getTasks();
   };
 
+  const getAllTasks = async (
+    page = 1,
+    limit = 10,
+    filters?: {
+      search?: string;
+      status?: string;
+      priority?: string;
+    },
+  ) => {
+    return taskApi.getAllTasks(page, limit, filters);
+  };
+
   const toggleTimer = async (id: string) => {
     return taskApi.toggleTimer(id);
   };
@@ -35,5 +47,6 @@ export const useTask = () => {
     toggleTimer,
     completeTask,
     deleteTask,
+    getAllTasks,
   };
 };
