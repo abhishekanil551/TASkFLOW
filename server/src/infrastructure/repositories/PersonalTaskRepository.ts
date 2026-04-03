@@ -29,30 +29,112 @@ export class PersonalTaskRepository implements IPersonalTaskRepository {
   }
 
   async findByUserId(userId: string): Promise<PersonalTask[]> {
-    const tasks = await PersonalTaskModel.find({ userId }).sort({
-      createdAt: -1,
-    });
+    const tasks = await PersonalTaskModel.find({ userId });
 
-    return tasks.map((task) => ({
-      id: task._id.toString(),
-      userId: task.userId,
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      priority: task.priority,
+    const today = new Date().toISOString().split("T")[0];
 
-      type: task.type,
-      days: task.days || [],
+    const todayDay = new Date()
+      .toLocaleDateString("en-US", { weekday: "short" })
+      .toLowerCase();
 
-      startDate: task.startDate || "",
-      dueDate: task.dueDate || "",
+    const priorityOrder: Record<string, number> = {
+      urgent: 4,
+      high: 3,
+      medium: 2,
+      low: 1,
+    };
 
-      timeSpent: task.timeSpent,
-      isTimerRunning: task.isTimerRunning,
+    const statusOrder: Record<string, number> = {
+      "in-progress": 3,
+      todo: 2,
+      completed: 1,
+    };
 
-      createdAt: task.createdAt.toISOString(),
-      updatedAt: task.updatedAt.toISOString(),
-    }));
+    return tasks
+
+      .filter((task) => {
+        if (task.type === "recurring") {
+          if (!(task.days || []).includes(todayDay)) return false;
+        }
+
+        const isCompletedOverdue =
+          task.status === "completed" && task.dueDate && task.dueDate < today;
+
+        if (isCompletedOverdue) return false;
+
+        return true;
+      })
+
+      .map((task) => {
+        let status = task.status;
+        let timeSpent = task.timeSpent;
+        let lastStartedAt = task.lastStartedAt;
+
+        if (task.type === "recurring") {
+          if (
+            task.status === "completed" &&
+            task.lastCompletedDate &&
+            task.lastCompletedDate !== today
+          ) {
+            status = "todo";
+            timeSpent = 0;
+            lastStartedAt = null;
+          }
+        }
+
+        if (task.isTimerRunning && task.lastStartedAt) {
+          const diff = Math.floor(
+            (Date.now() - new Date(task.lastStartedAt).getTime()) / 1000,
+          );
+          timeSpent += diff;
+        }
+
+        return {
+          id: task._id.toString(),
+          userId: task.userId,
+          title: task.title,
+          description: task.description,
+          status,
+          priority: task.priority,
+
+          type: task.type,
+          days: task.days || [],
+
+          startDate: task.startDate || "",
+          dueDate: task.dueDate || "",
+
+          timeSpent,
+          isTimerRunning: task.isTimerRunning,
+
+          lastStartedAt: task.lastStartedAt
+            ? task.lastStartedAt.toISOString()
+            : null,
+
+          createdAt: task.createdAt.toISOString(),
+          updatedAt: task.updatedAt.toISOString(),
+        };
+      })
+
+      .sort((a, b) => {
+        const aOverdue =
+          a.dueDate && a.dueDate < today && a.status !== "completed";
+        const bOverdue =
+          b.dueDate && b.dueDate < today && b.status !== "completed";
+
+        if (aOverdue !== bOverdue) return aOverdue ? -1 : 1;
+
+        if (statusOrder[a.status] !== statusOrder[b.status]) {
+          return statusOrder[b.status] - statusOrder[a.status];
+        }
+
+        if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+          return priorityOrder[b.priority] - priorityOrder[a.priority];
+        }
+
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
   }
 
   async findById(id: string): Promise<PersonalTask | null> {
@@ -130,7 +212,7 @@ export class PersonalTaskRepository implements IPersonalTaskRepository {
     const today = new Date().toISOString().split("T")[0];
 
     if (!isRunning) {
-      if (task.type === "recurring" && task.lastCompletedDate === today) {
+      if (task.type === "recurring" && task.lastCompletedDate !== today) {
         newTimeSpent = 0;
         task.lastCompletedDate = "";
       }
