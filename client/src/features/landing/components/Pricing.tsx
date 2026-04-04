@@ -16,7 +16,7 @@ export const Pricing: React.FC = () => {
             ₹0<span className="text-lg text-gray-500 font-normal">/mo</span>
           </div>
           <ul className="space-y-4 mb-8 flex-1 text-gray-300">
-            <li className="flex items-center gap-3">✓ <span className="text-gray-400">Up to 5 tasks</span></li>
+            <li className="flex items-center gap-3">✓ <span className="text-gray-400"> Unlimited tasks</span></li>
             <li className="flex items-center gap-3">✓ <span className="text-gray-400">Basic task management</span></li>
           </ul>
           <button className="w-full py-3 rounded-lg bg-gray-700 text-white font-medium hover:bg-gray-600 transition-colors">
@@ -34,7 +34,7 @@ export const Pricing: React.FC = () => {
             <del>₹1888</del> ₹888<span className="text-gray-500">/mo</span>   
           </div>
           <ul className="space-y-4 mb-8 flex-1 text-gray-300">
-            <li className="flex items-center gap-3 text-cyan-400">✓ <span className="text-gray-200">Unlimited tasks + workshop</span></li>
+            <li className="flex items-center gap-3 text-cyan-400">✓ <span className="text-gray-200">Unlimited tasks + 2 workspaces</span></li>
             <li className="flex items-center gap-3 text-cyan-400">✓ <span className="text-gray-200">Advanced features</span></li>
             <li className="flex items-center gap-3 text-cyan-400">✓ <span className="text-gray-200">Custom integrations</span></li>
           </ul>
