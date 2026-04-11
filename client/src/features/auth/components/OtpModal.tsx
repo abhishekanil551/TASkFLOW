@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { useAuth } from "../../../components/hooks/useAuth";
+import { useAuth } from "../../../hooks/useAuth";
 
 interface OtpModalProps {
   email: string;

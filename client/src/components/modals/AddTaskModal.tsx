@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import type { Task } from "../../domain/entities/Task";
+import type { Task } from "../../types/Task";
 
 interface AddTaskModalProps {
   isOpen: boolean;

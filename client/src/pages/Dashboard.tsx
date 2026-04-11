@@ -4,8 +4,8 @@ import MainLayout from "../components/layout/MainLayout";
 import TaskCard from "../components/common/TaskCard";
 import AddTaskModal from "../components/modals/AddTaskModal";
 import { Plus } from "lucide-react";
-import { useTask } from "../components/hooks/useTask";
-import type { Task } from "../domain/entities/Task";
+import { useTask } from "../hooks/useTask";
+import type { Task } from "../types/Task";
 
 export default function Dashboard() {
   const { user } = useAuthContext();

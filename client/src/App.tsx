@@ -3,6 +3,7 @@ import ProtectedRoute from "./components/ui/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import MyTasks from "./pages/MyTask";
+import { Workspaces } from "./pages/workspace";   
 import  MainLayout from "./components/layout/MainLayout"
 import { LayoutProvider } from "./context/layout/LayoutProvider";
 import "./index.css";
@@ -32,6 +33,20 @@ function App() {
               <LayoutProvider>
                 <MainLayout>
                 <MyTasks />
+                </MainLayout>
+              </LayoutProvider>
+              
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/workspaces"
+          element={
+            <ProtectedRoute>
+              <LayoutProvider>
+                <MainLayout>
+                <Workspaces />
                 </MainLayout>
               </LayoutProvider>
               

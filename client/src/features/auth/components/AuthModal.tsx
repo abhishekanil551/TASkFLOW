@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import OtpModal from "./OtpModal";
 import { GoogleLogin } from "@react-oauth/google";
 import {jwtDecode} from "jwt-decode";
-import { useAuth } from "../../../components/hooks/useAuth";
+import { useAuth } from "../../../hooks/useAuth";
 import Logo from "../../../components/ui/Logo";
 
 interface AuthModalProps {

@@ -6,8 +6,8 @@ import TaskCard from "../components/common/TaskCard";
 import AddTaskModal from "../components/modals/AddTaskModal";
 import Pagination from "../components/common/Pagination";
 
-import { useTask } from "../components/hooks/useTask";
-import type { Task } from "../domain/entities/Task";
+import { useTask } from "../hooks/useTask";
+import type { Task } from "../types/Task";
 
 type FilterTab = "all" | "active" | "completed" | "overdue";
 
