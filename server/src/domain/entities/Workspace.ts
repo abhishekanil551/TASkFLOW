@@ -1,0 +1,8 @@
+export type Workspace = {
+  id: string;
+  name: string;
+  ownerId: string;
+
+  createdAt: string;
+  updatedAt: string;
+};

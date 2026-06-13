@@ -7,3 +7,10 @@ export interface User {
   otpExpires?: Date | null;
   isVerified: boolean
 }
+
+export interface normalUser {
+  id: string
+  name: string
+  email: string
+  
+}

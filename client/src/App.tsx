@@ -3,57 +3,70 @@ import ProtectedRoute from "./components/ui/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import MyTasks from "./pages/MyTask";
-import { Workspaces } from "./pages/workspace";   
-import  MainLayout from "./components/layout/MainLayout"
+import { Workspaces } from "./pages/workspace";
+import MainLayout from "./components/layout/MainLayout"
 import { LayoutProvider } from "./context/layout/LayoutProvider";
 import "./index.css";
 
 function App() {
   return (
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <LayoutProvider>
-                <MainLayout>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <LayoutProvider>
+              <MainLayout>
                 <Dashboard />
-                </MainLayout>
-              </LayoutProvider>
-              
-            </ProtectedRoute>
-          }
-        />
+              </MainLayout>
+            </LayoutProvider>
 
-        <Route
-          path="/my-tasks"
-          element={
-            <ProtectedRoute>
-              <LayoutProvider>
-                <MainLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/my-tasks"
+        element={
+          <ProtectedRoute>
+            <LayoutProvider>
+              <MainLayout>
                 <MyTasks />
-                </MainLayout>
-              </LayoutProvider>
-              
-            </ProtectedRoute>
-          }
-        />
+              </MainLayout>
+            </LayoutProvider>
 
-        <Route
-          path="/workspaces"
-          element={
-            <ProtectedRoute>
-              <LayoutProvider>
-                <MainLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/workspaces"
+        element={
+          <ProtectedRoute>
+            <LayoutProvider>
+              <MainLayout>
                 <Workspaces />
-                </MainLayout>
-              </LayoutProvider>
-              
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+              </MainLayout>
+            </LayoutProvider>
+
+          </ProtectedRoute>
+        }
+      />
+      
+      <Route
+        path="/workspaces/:id"
+        element={
+          <ProtectedRoute>
+            <LayoutProvider>
+              <MainLayout>
+                <Workspaces />
+              </MainLayout>
+            </LayoutProvider>
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }
 

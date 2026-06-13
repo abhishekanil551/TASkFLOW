@@ -6,6 +6,12 @@ import { connectDB } from "./infrastructure/database/db";
 import authCheckRoutes from "./interfaces/routes/authCheckRoutes";
 import authRoutes from "./interfaces/routes/authRoutes";
 import taskRoutes from "./interfaces/routes/taskRoutes";
+import userRoutes from "./interfaces/routes/userRoutes";
+import workspaceRoutes from "./interfaces/routes/workspaceRoutes";
+import workspaceTaskRoutes from "./interfaces/routes/workspaceTaskRoutes";
+import notificationRoutes from "./interfaces/routes/notificationRoutes";
+
+
 
 const app = express();
 
@@ -23,6 +29,10 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", authCheckRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/workspaces", workspaceRoutes);
+app.use("/api/workspaces/:workspaceId/tasks", workspaceTaskRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 dotenv.config();
 

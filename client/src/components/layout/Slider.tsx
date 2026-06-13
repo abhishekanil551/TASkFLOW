@@ -4,8 +4,6 @@ import {
   LayoutDashboard,
   Briefcase,
   CheckSquare,
-  Users,
-  BarChart3,
   Settings,
   LogOut,
 } from 'lucide-react';
@@ -22,8 +20,6 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Workspaces', href: '/workspaces', icon: Briefcase },
   { name: 'My Tasks', href: '/my-tasks', icon: CheckSquare },
-  { name: 'Team', href: '/team-members', icon: Users },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Upgrade' , href: '/upgrade', icon: UpgradeIcon},
   { name: 'Settings', href: '/settings', icon: Settings },
 ];
@@ -91,23 +87,10 @@ export default function Sidebar() {
         </nav>
 
         {/* User Footer */}
-        <div className="border-t border-gray-200 dark:border-gray-800 p-4">
-          <div
-            className={`flex items-center gap- rounded-xl p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer
-              ${isCollapsed ? 'justify-center' : ''}`}
-          >
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0" />
-
-            {!isCollapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm text-zinc-700 dark:text-white">Abhishek</p>
-              </div>
-            )}
-          </div>
-
+        <div className="border-t border-gray-200 dark:border-gray-800 p-2">
           <button
             onClick={logout}
-            className={`mt-2 w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 rounded-xl transition-colors
+            className={` w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 rounded-xl transition-colors
               ${isCollapsed ? 'justify-center' : ''}`}
           >
             <LogOut className="w-5 h-5" />
